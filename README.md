@@ -1,6 +1,6 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+IMPORTANT  : To make the chat working, launch 2 servers simultaneously (back and front) on 2 different terminal.
 
-To make the chat working, launch 2 servers simultaneously (back and front) on 2 different terminal.
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
 

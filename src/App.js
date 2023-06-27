@@ -1,29 +1,54 @@
-import React, {useState} from 'react'
+import React, { useEffect, useState } from "react";
+import socketIOClient from "socket.io-client";
+
+const ENDPOINT = "http://localhost:3001";
 
 function App() {
-  const [messageList, setMessageList] = useState([])
-  const [nickName, setNickName] = useState('')
-  const [newMessageText, setNewMessageText] = useState('')
-  const [socket, setSocket] = useState(null)
+  const [messageList, setMessageList] = useState([]);
+  const [nickName, setNickName] = useState("");
+  const [newMessageText, setNewMessageText] = useState("");
+  const [socket, setSocket] = useState(null);
 
-  const handleSubmit = e => {
-    e.preventDefault()
-  }
+  useEffect(() => {
+    const socket = socketIOClient(ENDPOINT);
+    setSocket(socket);
+
+    socket.on("chatMessage", (message) => {
+      setMessageList((messages) => [...messages, message]);
+    });
+
+    socket.on("initMessageList", (messages) => {
+      setMessageList(messages);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    socket.emit("chatMessage", {
+      author: nickName,
+      text: newMessageText,
+    });
+    setNewMessageText("");
+  };
 
   return (
     <div className="App">
       <h2>Messages</h2>
-      {messageList.map(message => {
+      {messageList.map((message, index) => {
         return (
-          <div key={message.id}>
+          <div key={index}>
             {message.author} : {message.text}
           </div>
-        )
+        );
       })}
 
       <form onSubmit={handleSubmit}>
         <h2>New Message</h2>
-        <input 
+        <input
           type="text"
           name="author"
           placeholder="nickname"
@@ -31,7 +56,7 @@ function App() {
           required
           onChange={(e) => setNickName(e.target.value)}
         />
-        <input 
+        <input
           type="text"
           name="messageContent"
           placeholder="message"
